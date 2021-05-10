@@ -12,7 +12,6 @@ SiteBlocker::~SiteBlocker()
 {
 }
 
-
 std::string SiteBlocker::pullOutSiteIps(std::string domain) {
 	std::string comm = "nslookup ";
 	std::string temp = (comm + domain);
@@ -53,15 +52,6 @@ std::string SiteBlocker::pullOutSiteIps(std::string domain) {
 	}
 	
 
-	///SHOW VECTOR
-
-	//std::vector<std::string>::iterator it = sitesIPs.begin();
-	/*while (it != sitesIPs.end()) {
-		std::cout << *it << ' ';
-
-		it++;
-	}*/
-
 	if (ferror(pipe)) {
 		perror(finalCommand);
 		return "pizdec kakoy-to";
@@ -72,7 +62,6 @@ std::string SiteBlocker::pullOutSiteIps(std::string domain) {
 
 	return "";
 }
-
 std::string SiteBlocker::pullOutSitesIps() {
 
 	
@@ -125,11 +114,9 @@ std::string SiteBlocker::pullOutSitesIps() {
 std::vector<std::string> SiteBlocker::get_sitesNames() {
 	return _sitesNames;
 }
-
 std::vector<std::string> SiteBlocker::get_sitesIPs() {
 	return _sitesIPs;
 }
-
 std::string SiteBlocker::get_blockCommand() {
 	return _blockCommand;
 }
@@ -167,4 +154,12 @@ std::string SiteBlocker::prepairBlockingCommand() {
 
 
 	return "";
+}
+
+void SiteBlocker::blockSites() {
+	system(_blockCommand.c_str());
+}
+
+void SiteBlocker::restoreSites() {
+	system(_restoreCommand.c_str());
 }

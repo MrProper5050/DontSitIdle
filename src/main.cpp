@@ -82,7 +82,7 @@ int main() {
 	sb.prepairIps();
 	sb.prepairBlockingCommand();
 
-	system(sb.get_blockCommand().c_str());
+	
 
 
 	
