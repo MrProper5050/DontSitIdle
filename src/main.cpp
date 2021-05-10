@@ -63,24 +63,11 @@ void someBody() {
 }
 int main() {
 	setlocale(LC_ALL, "rus");
-	//write
-	//std::ofstream myFileW("C:\\Windows\\System32\\drivers\\etc\\hosts", std::ios_base::app);
-	// 
-	//std::ofstream myFileW("mytext.txt");
 
-	//if (!myFileW.is_open()) {
-	//	std::cout << "Программа не может открыть файл!";
-	//	std::cin.get();
-	//	return 1;
-	//}
-
-	//myFileW << "127.0.0.1 vk.com";
-	//myFileW.close();
-
-	SiteBlocker sb({"vk.com","ok.ru"});
+	SiteBlocker sb({"vk.com", "ok.ru"});
 
 	std::string err = sb.pullOutSitesIps();
-	if (err.size()) {
+	if (err.size() != 0) {
 		std::cout << err;
 		return 12;
 	}
@@ -88,20 +75,27 @@ int main() {
 	std::vector<std::string> ips = sb.get_sitesIPs();
 	std::vector<std::string>::iterator it = ips.begin();
 	while (it != ips.end()) {
-		std::cout << *it << ' ';
-
+		std::cout<<	'\n' << *it ;
 		it++;
 	}
 
+	sb.prepairIps();
+	sb.prepairBlockingCommand();
 
-	////read
-	//char buff[50];
-	//std::ifstream myFileR("testC++file.txt");
+	system(sb.get_blockCommand().c_str());
 
-	//myFileR.getline(buff, 50);
-	//myFileR.close();
-	//std::cout << buff;
+
 	
 	std::cin.get();
 
 }
+
+
+///TODO
+/*
+
+1 - Сделать поиск IP в несколько потоков
+1.1 - Сделать так, чтобы программа не вылетала из-за, хотя бы, одного неправильного домена
+
+
+*/

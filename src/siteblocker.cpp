@@ -4,7 +4,7 @@
 
 
 
-SiteBlocker::SiteBlocker(std::vector<std::string> sites): sitesNames(sites)
+SiteBlocker::SiteBlocker(std::vector<std::string> sites): _sitesNames(sites)
 {
 }
 
@@ -39,15 +39,19 @@ std::string SiteBlocker::pullOutSiteIps(std::string domain) {
 		i++;
 		if (buf_s.size() > 1) {
 			if (i == 5) {
-				sitesIPs.push_back(buf_s.substr(12, buf_s.size() - 13));
+				_sitesIPs.push_back(buf_s.substr(12, buf_s.size() - 13));
 			}
 			if (i > 5) {
-				sitesIPs.push_back(buf_s.substr(3, buf_s.size() - 4));
+				_sitesIPs.push_back(buf_s.substr(3, buf_s.size() - 4));
 			}
 			//printf("%d]Got line: %s", i, buf);
 		}
 
 	}
+	if (!_sitesIPs.size()) {
+		return "Failed to get site IPs, check domain for errors";
+	}
+	
 
 	///SHOW VECTOR
 
@@ -74,8 +78,8 @@ std::string SiteBlocker::pullOutSitesIps() {
 	
 	char buf[100];
 
-	std::vector<std::string>::iterator site = sitesNames.begin();
-	while (site != sitesNames.end())
+	std::vector<std::string>::iterator site = _sitesNames.begin();
+	while (site != _sitesNames.end())
 	{
 
 		FILE* pipe;
@@ -84,7 +88,7 @@ std::string SiteBlocker::pullOutSitesIps() {
 		const char* finalCommand = (const char*)temp.c_str();
 
 		pipe = _popen(finalCommand, "rt");
-		
+
 		if (pipe == NULL)
 		{
 			perror(finalCommand);
@@ -99,10 +103,10 @@ std::string SiteBlocker::pullOutSitesIps() {
 			i++;
 			if (buf_s.size() > 1) {
 				if (i == 5) {
-					sitesIPs.push_back(buf_s.substr(12, buf_s.size() - 13));
+					_sitesIPs.push_back(buf_s.substr(12, buf_s.size() - 13));
 				}
 				if (i > 5) {
-					sitesIPs.push_back(buf_s.substr(3, buf_s.size() - 4));
+					_sitesIPs.push_back(buf_s.substr(3, buf_s.size() - 4));
 				}
 			}
 
@@ -110,16 +114,57 @@ std::string SiteBlocker::pullOutSitesIps() {
 		_pclose(pipe);
 		site++;
 	}
-
+	if (!_sitesIPs.size()) {
+		return "Failed to get site IPs, check domain for errors";
+	}
 	
 
 	return "";
 }
 
 std::vector<std::string> SiteBlocker::get_sitesNames() {
-	return sitesNames;
+	return _sitesNames;
 }
 
 std::vector<std::string> SiteBlocker::get_sitesIPs() {
-	return sitesIPs;
+	return _sitesIPs;
+}
+
+std::string SiteBlocker::get_blockCommand() {
+	return _blockCommand;
+}
+
+std::vector<std::string> SiteBlocker::prepairIps() {
+
+	int sz = _sitesIPs.size();
+
+	for (int i = 0; i < sz; i++)
+	{
+		_preparedSitesIPs.push_back("''" + _sitesIPs[i] + "''");
+	}
+
+	return _preparedSitesIPs;
+
+}
+std::string SiteBlocker::prepairBlockingCommand() {
+	int sz = _preparedSitesIPs.size();
+	if (!sz)
+		return "No prepared IPs";
+
+	std::string combinedIps;
+
+	int i = 0;
+	combinedIps += _preparedSitesIPs[i];
+	for (i=1; i < sz; i++)
+	{
+		
+		combinedIps += ", " + _preparedSitesIPs[i];
+		
+		
+	}
+
+	_blockCommand = _fwSTARTBlockCommandPart + combinedIps + _fwENDBlockCommandPart;
+
+
+	return "";
 }
